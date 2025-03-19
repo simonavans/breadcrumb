@@ -15,7 +15,7 @@ void gps_init() {
 void gps_get_location(location* loc) {
     loc->timestamp = millis() / 1000;
     loc->lat = 69.12345678;
-    loc->lng = 420.12345678;
+    loc->lng = 70.12345678;
 
     if (sws.available()) {
         while (sws.available()) {

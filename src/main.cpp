@@ -72,7 +72,7 @@ void loop() {
         Serial.println("Attempting to send data...");
 
         char cmd[128];
-        sprintf(cmd, "AT+CMSG=\"%s,%s;10,96.123457,124.123457\"\r\n", latitude,
+        sprintf(cmd, "AT+CMSG=\"%s,%s;10,-69.123457,-70.123457\"\r\n", latitude,
                 longitude);
         ret = lora_send_cmd("Done", 5000, cmd, recv_buf, sizeof(recv_buf));
 
