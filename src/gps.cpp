@@ -26,10 +26,23 @@ void gps_get_location(location* loc) {
 
         char* gps_str = gps_buf;
         while (*gps_str) {
-            if (gps_dec.encode(*gps_str++) && gps_dec.location.isValid()) {
-                loc->timestamp = millis() / 1000;
-                loc->lat = gps_dec.location.lat();
-                loc->lng = gps_dec.location.lng();
+            if (gps_dec.encode(*gps_str++)) {
+                if (gps_dec.location.isValid()) {
+                    loc->timestamp = millis() / 1000;
+                    loc->lat = gps_dec.location.lat();
+                    loc->lng = gps_dec.location.lng();
+                    #ifdef LOG_GPS
+                    Serial.print("[GPS] Lat:");
+                    Serial.printf("%s ", gps_dec.location.lat());
+                    Serial.printf("Lng: %s", gps_dec.location.lng());
+                    Serial.println();
+                    #endif
+                } else {
+                    #ifdef LOG_GPS
+                    Serial.println("[GPS] INVALID LOCATION");
+                    #endif
+                }
+                
             }
         }
 

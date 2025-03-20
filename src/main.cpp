@@ -1,3 +1,5 @@
+#define LOG_GPS
+
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <TinyGPSPlus.h>
