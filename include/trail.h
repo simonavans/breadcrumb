@@ -3,8 +3,8 @@
 
 #include "gps.h"
 
-void store_location(location loc);
+void trail_store_loc(location loc);
 
-location* get_past_location();
+void trail_get_past_loc(location* loc);
 
 #endif
