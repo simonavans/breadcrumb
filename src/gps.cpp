@@ -1,3 +1,5 @@
+#define LOG_GPS
+
 #include "gps.h"
 #include "TinyGPS++.h"
 #include <Arduino.h>
@@ -12,8 +14,8 @@ void gps_init() { sws.begin(9600); }
 
 void gps_get_location(location* loc) {
     loc->timestamp = millis() / 1000;
-    loc->lat       = 69.12345678;
-    loc->lng       = 70.12345678;
+    loc->lat       = (int)(rand() * millis()) % 90;
+    loc->lng       = (int)(rand() * -millis()) % 90;
 
     if (sws.available()) {
         while (sws.available()) {
@@ -30,9 +32,8 @@ void gps_get_location(location* loc) {
                     loc->lat       = gps_dec.location.lat();
                     loc->lng       = gps_dec.location.lng();
 #ifdef LOG_GPS
-                    Serial.print("[GPS] Lat:");
-                    Serial.printf("%s ", gps_dec.location.lat());
-                    Serial.printf("Lng: %s", gps_dec.location.lng());
+                    Serial.printf("[GPS] Lat: %s", gps_dec.location.lat());
+                    Serial.printf(" Lng: %s", gps_dec.location.lng());
                     Serial.println();
 #endif
                 } else {

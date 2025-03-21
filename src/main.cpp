@@ -1,4 +1,3 @@
-#define LOG_GPS
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
@@ -7,6 +6,7 @@
 #include "gps.h"
 #include "lora.h"
 #include "secrets.h"
+#include "trail.h"
 
 static char recv_buf[512];
 static bool joined    = false;
@@ -17,6 +17,8 @@ void setup() {
     Serial1.begin(9600);
     pinMode(LED_BUILTIN, OUTPUT);
     delay(2000);
+
+    gps_init();
 
     Serial.println("Getting module properties...");
 
@@ -52,11 +54,9 @@ void loop() {
     if (!connected)
         return;
 
-    char latitude[11], longitude[11];
-    location loc;
-    gps_get_location(&loc);
-    dtostrf(loc.lat, 0, 6, latitude);
-    dtostrf(loc.lng, 0, 6, longitude);
+    location curr_loc;
+    gps_get_location(&curr_loc);
+    trail_store_loc(&curr_loc);
 
     int ret = 0;
 
@@ -71,11 +71,23 @@ void loop() {
             delay(5000);
         }
     } else {
+        location past_loc;
+        trail_get_past_loc(&past_loc);
+
         Serial.println("Attempting to send data...");
 
+        char curr_lat[11], curr_lng[11];
+        dtostrf(curr_loc.lat, 0, 6, curr_lat);
+        dtostrf(curr_loc.lng, 0, 6, curr_lng);
+        char past_lat[11], past_lng[11];
+        dtostrf(past_loc.lat, 0, 6, past_lat);
+        dtostrf(past_loc.lng, 0, 6, past_lng);
+        int time_diff = (millis() / 1000) - past_loc.timestamp;
+
         char cmd[128];
-        sprintf(cmd, "AT+CMSG=\"%s,%s;10,-69.123457,-70.123457\"\r\n", latitude,
-                longitude);
+        sprintf(cmd, "AT+CMSG=\"%s,%s;%d,%s,%s\"\r\n", curr_lat, curr_lng,
+                time_diff, past_lat, past_lng);
+
         ret = lora_send_cmd("Done", 5000, cmd, recv_buf, sizeof(recv_buf));
 
         if (ret) {
