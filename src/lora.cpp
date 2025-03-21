@@ -3,10 +3,7 @@
 
 static bool led_on = false;
 
-int lora_send_cmd(char* ack,
-                  int timeout_ms,
-                  char* cmd,
-                  char* recv_buf,
+int lora_send_cmd(char* ack, int timeout_ms, char* cmd, char* recv_buf,
                   int recv_buf_len) {
     if (ack == NULL)
         return 0;
@@ -16,12 +13,12 @@ int lora_send_cmd(char* ack,
     Serial.print(cmd);
     delay(200);
 
-    int idx = 0;
+    int idx          = 0;
     int millis_start = millis();
 
     do {
         while (Serial1.available() > 0) {
-            char ch = (char)Serial1.read();
+            char ch         = (char)Serial1.read();
             recv_buf[idx++] = (int)ch;
             Serial.print(ch);
             delay(2);
@@ -41,17 +38,17 @@ void lora_print_status(char* status_msg) {
 
     int data = 0;
     int rssi = 0;
-    int snr = 0;
+    int snr  = 0;
 
     char* start = strstr(status_msg, "RX");
-    int parsed = sscanf(start, "RX: \"%d\"\r\n", &data);
+    int parsed  = sscanf(start, "RX: \"%d\"\r\n", &data);
     if (start && parsed == 1) {
         Serial.println(data);
         led_on = !!data;
         digitalWrite(LED_BUILTIN, led_on ? LOW : HIGH);
     }
 
-    start = strstr(status_msg, "RSSI");
+    start  = strstr(status_msg, "RSSI");
     parsed = sscanf(start, "%d", &rssi);
     if (start && parsed == 1) {
         Serial.print("RSSI: ");

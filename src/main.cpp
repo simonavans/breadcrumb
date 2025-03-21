@@ -9,7 +9,7 @@
 #include "secrets.h"
 
 static char recv_buf[512];
-static bool joined = false;
+static bool joined    = false;
 static bool connected = false;
 
 void setup() {
