@@ -25,10 +25,6 @@ void trail_get_past_loc(location* loc) {
     int idx = 0;
 
     while (curr_divisor >= 1) {
-        if (curr_idx == 0) {
-            curr_idx = 0;
-        }
-
         while (curr_idx < TRAIL_MAX_DENSITY) {
             if (curr_idx % prev_divisor != 0) {
                 idx       = curr_idx;
@@ -43,6 +39,12 @@ void trail_get_past_loc(location* loc) {
             loc->timestamp      = stored_loc.timestamp;
             loc->lat            = stored_loc.lat;
             loc->lng            = stored_loc.lng;
+
+            if (curr_divisor == 1 && curr_idx == TRAIL_MAX_DENSITY) {
+                curr_divisor = TRAIL_MAX_DENSITY / 2;
+                prev_divisor = TRAIL_MAX_DENSITY + 1;
+                curr_idx     = 0;
+            }
             return;
         }
 
