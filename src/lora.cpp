@@ -1,3 +1,5 @@
+#define LOG_LORA
+
 #include "lora.h"
 #include <Arduino.h>
 
@@ -21,7 +23,9 @@ void lora_update() {
     if (Serial1.available() > 0) {
         char ch                = (char)Serial1.read();
         cmd_buf[cmd_buf_idx++] = (int)ch;
+#ifdef LOG_LORA
         Serial.print(ch);
+#endif
         delay(2);
     }
 
@@ -55,7 +59,9 @@ void lora_transmit(char* cmd, char* res, int timeout_ms) {
     lora_status     = LCS_PENDING;
 
     Serial1.print(cmd);
-    Serial.print(cmd);
+#ifdef LOG_LORA
+    Serial.printf("[LORA] Sending command '%s'\n", cmd);
+#endif
 }
 
 int lora_send_cmd(char* ack, int timeout_ms, char* cmd, char* recv_buf,
