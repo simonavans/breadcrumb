@@ -1,3 +1,4 @@
+#define CANNOT_SEND_INVALID_LOCATION
 #define GPS_COOLDOWN_MS  4000
 #define SEND_COOLDOWN_MS 10000
 
@@ -96,25 +97,33 @@ void loop() {
 
         if (update) {
             last_gps_upd_ms = millis();
-            trail_store_loc(&curr_loc);
-            if (millis() - last_send_upd_ms >= SEND_COOLDOWN_MS) {
-                last_send_upd_ms = millis();
-                location past_loc;
-                trail_get_past_loc(&past_loc);
+#ifdef CANNOT_SEND_INVALID_LOCATION
+            if (curr_loc.lat != 0 || curr_loc.lng != 0) {
+#endif
+                trail_store_loc(&curr_loc);
+                if (millis() - last_send_upd_ms >= SEND_COOLDOWN_MS) {
+                    last_send_upd_ms = millis();
+                    location past_loc;
+                    trail_get_past_loc(&past_loc);
 
-                switch (lora_status) {
-                    case LCS_IDLE: send_payload(&curr_loc, &past_loc); break;
-                    case LCS_SUCCESS:
-                        Serial.println("Payload sent successfully");
-                        lora_status = LCS_IDLE;
-                        break;
-                    case LCS_TIMEOUT:
-                        Serial.println("Failed to send payload");
-                        lora_status = LCS_IDLE;
-                        break;
-                    default: break;
+                    switch (lora_status) {
+                        case LCS_IDLE:
+                            send_payload(&curr_loc, &past_loc);
+                            break;
+                        case LCS_SUCCESS:
+                            Serial.println("Payload sent successfully");
+                            lora_status = LCS_IDLE;
+                            break;
+                        case LCS_TIMEOUT:
+                            Serial.println("Failed to send payload");
+                            lora_status = LCS_IDLE;
+                            break;
+                        default: break;
+                    }
                 }
+#ifdef CANNOT_SEND_INVALID_LOCATION
             }
+#endif
         }
     }
 }
