@@ -9,6 +9,6 @@ struct location {
 
 void gps_init();
 
-void gps_get_location(location* loc);
+bool gps_get_location(location* loc);
 
 #endif
