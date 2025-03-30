@@ -12,7 +12,6 @@
 
 void send_payload(location* curr_loc, location* past_loc);
 
-static char recv_buf[512];
 static bool joined      = false;
 static bool initialized = false;
 
@@ -65,7 +64,6 @@ void loop() {
     if (!initialized)
         return;
 
-    int ret = 0;
     lora_update();
 
     if (!joined) {

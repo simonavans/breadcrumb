@@ -19,7 +19,7 @@ static TinyGPSPlus gps_dec;
 void gps_init() {
     sws.begin(9600);
     delay(2000);
-    sws.println("$PGKC030,1,1*2C");
+    sws.println(HOT_START_CMD);
     delay(4000);
 }
 
